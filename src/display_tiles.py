@@ -1,7 +1,14 @@
+from enum import Enum
 import rasterio
-import numpy as np
 import matplotlib.pyplot as plt
+import os
+import re
+import numpy as np
+from dataset.read_data import ReadTifs
 
+reader = ReadTifs()
+
+def show_rgb(data, title):
     if data.shape[0] < 3:
         return
 
@@ -22,3 +29,6 @@ import matplotlib.pyplot as plt
     plt.title(title)
     plt.axis("off")
     plt.show()
+
+for name, t, data in reader.loop_through_files():
+    show_rgb(data, name)
