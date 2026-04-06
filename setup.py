@@ -1,53 +1,71 @@
 from enum import Enum
 import rasterio
-import numpy as np
 import matplotlib.pyplot as plt
 import os
+import re
+import numpy as np
 
-IMAGES = os.path.expanduser("./resources")
+IMAGES_DIR = os.path.expanduser("./resources")
+WINDOW = rasterio.windows.Window(0, 0, 2000, 2000)
 
-window = rasterio.windows.Window(0, 0, 2000, 2000)
-
-class TYPES(Enum):
-    SAT_16 = 1
-    SAT_23 = 2
-    BUILD_16 = 3
-    BUILD_23 = 4
+class FileType(Enum):
+    SAT_2016 = 1
+    SAT_2023 = 2
+    BUILD_2016 = 3
+    BUILD_2023 = 4
     BUILD_NEW = 5
 
-def extract_metadata_type(filename):
-    name = filename.upper()
+RULES = [
+    (re.compile(r"NEW[_]?BUILDINGS", re.I), FileType.BUILD_NEW),
+    (re.compile(r"BUILDINGS.*2016", re.I), FileType.BUILD_2016),
+    (re.compile(r"BUILDINGS.*2023", re.I), FileType.BUILD_2023),
+    (re.compile(r"S2.*2016", re.I), FileType.SAT_2016),
+    (re.compile(r"S2.*2023", re.I), FileType.SAT_2023),
+]
 
-    if "NEWBUILDINGS" in name or "NEW_BUILDINGS" in name:
-        return TYPES.BUILD_NEW
-    elif "BUILDINGS" in name and "2016" in name:
-        return TYPES.BUILD_16
-    elif "BUILDINGS" in name and "2023" in name:
-        return TYPES.BUILD_23
-    elif "S2" in name and "2016" in name:
-        return TYPES.SAT_16
-    elif "S2" in name and "2023" in name:
-        return TYPES.SAT_23
-    else:
-        raise ValueError(f"Unknown file: {filename}")
+def get_type(filename):
+    for pattern, t in RULES:
+        if pattern.search(filename):
+            return t
+    raise ValueError(f"Unknown file: {filename}")
 
-for root, _, files in os.walk(IMAGES):
-    for file in files:
-        if not file.lower().endswith(".tif"):
-            continue
+def get_tif_files(folder):
+    for root, _, files in os.walk(folder):
+        for f in files:
+            if f.lower().endswith(".tif"):
+                yield os.path.join(root, f)
 
-        filepath = os.path.join(root, file)
+def read_preview(path):
+    with rasterio.open(path) as src:
+        return src.read(window=WINDOW)
 
-        try:
-            file_type = extract_metadata_type(file)
-            print(f"{file} -> {file_type.name}")
+def show_rgb(data, title):
+    if data.shape[0] < 3:
+        return
 
-            with rasterio.open(filepath) as src:
-                data = src.read(window=window)
-                print(f"Data shape: {data.shape}")
-                plt.imshow(data[0], cmap='gray')
-                plt.title(f"{file_type.name} - {file}")
-                plt.show()
+    rgb = np.stack([data[2], data[1], data[0]], axis=-1).astype("float32")
+    rgb = np.nan_to_num(rgb, nan=0.0)
 
-        except ValueError as e:
-            print(e)
+    valid = rgb > 0
+    if not np.any(valid):
+        return
+
+    p2 = np.percentile(rgb[valid], 2)
+    p98 = np.percentile(rgb[valid], 98)
+
+    rgb = (rgb - p2) / (p98 - p2 + 1e-6)
+    rgb = np.clip(rgb, 0, 1)
+
+    plt.imshow(rgb)
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+
+for path in get_tif_files(IMAGES_DIR):
+    name = os.path.basename(path)
+    try:
+        t = get_type(name)
+        data = read_preview(path)
+
+    except ValueError as e:
+        print(e)
