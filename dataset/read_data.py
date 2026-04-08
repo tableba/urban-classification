@@ -7,8 +7,8 @@ class ReadTifs:
                  images_dir = "./data",
                  rules = [
                     (re.compile(r"NEW[_]?BUILDINGS", re.I), "BUILD_NEW"),
-                    (re.compile(r"BUILDINGS.*2016", re.I), "BUILD_2016"),
-                    (re.compile(r"BUILDINGS.*2023", re.I), "BUILD_2023"),
+                    (re.compile(r"2016.*BUILDINGS", re.I), "BUILD_2016"),
+                    (re.compile(r"2023.*BUILDINGS", re.I), "BUILD_2023"),
                     (re.compile(r"S2.*2016", re.I), "SAT_2016"),
                     (re.compile(r"S2.*2023", re.I), "SAT_2023"),
                 ]
@@ -32,6 +32,7 @@ class ReadTifs:
         with rasterio.open(path) as src:
             return src.read(window=window)
 
+    # loops through files with variables t (type), name, data
     def loop_through_files(self):
         for path in self.get_tif_files(self.images_dir):
             name = os.path.basename(path)
