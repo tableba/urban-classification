@@ -30,5 +30,5 @@ def show_rgb(data, title):
     plt.axis("off")
     plt.show()
 
-for name, t, data in reader.loop_through_files():
+for name, t, data in reader.loop_through_s2():
     show_rgb(data, name)
