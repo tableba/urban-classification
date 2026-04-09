@@ -1,5 +1,6 @@
 import ee
 import json
+import time
 
 ee.Initialize(project='thesis-485617')
 
@@ -60,11 +61,10 @@ def mask_clouds_img(img):
 s2_composite = ee.ImageCollection(s2_with_cloud_mask) \
                    .map(mask_clouds_img) \
                    .median() \
-                   .select(['B2','B3','B4','B8','B11'])
-
+                   .select(['B2','B3','B4','B5','B6','B7','B8', 'B8a','B11'])
 # ==================== EXPORT PER TILE ====================
 
-for i in range(50,51):
+for i in range(num_tiles):
     geom = ee.Geometry(features[i]["geometry"])
 
     # --- S2 input ---
@@ -73,7 +73,7 @@ for i in range(50,51):
     ee.batch.Export.image.toDrive(
         image=s2_tile,
         description=f'tile_{i}_S2',
-        folder='GEE_tiles_varicelle',
+        folder='GEE_S2',
         fileNamePrefix=f'tile_{i}_S2',
         region=geom,
         scale=SCALE,
@@ -87,12 +87,15 @@ for i in range(50,51):
     ee.batch.Export.image.toDrive(
         image=dw_tile,
         description=f'tile_{i}_DW',
-        folder='GEE_tiles_varicelle',
+        folder='GEE_DW',
         fileNamePrefix=f'tile_{i}_DW',
         region=geom,
         scale=SCALE,
         maxPixels=1e13,
         fileFormat='GeoTIFF'
     ).start()
+
+    print(f"Started exports for tile {i}")
+    time.sleep(0.1)  # slight delay to avoid throttling
 
 print("Export tasks started. Check GEE Task Manager to monitor progress.")
