@@ -61,7 +61,7 @@ def mask_clouds_img(img):
 s2_composite = ee.ImageCollection(s2_with_cloud_mask) \
                    .map(mask_clouds_img) \
                    .median() \
-                   .select(['B2','B3','B4','B5','B6','B7','B8', 'B8a','B11'])
+                   .select(['B2','B3','B4','B5','B6','B7','B8', 'B8A','B11'])
 # ==================== EXPORT PER TILE ====================
 
 for i in range(num_tiles):
@@ -75,7 +75,7 @@ for i in range(num_tiles):
         description=f'tile_{i}_S2',
         folder='GEE_S2',
         fileNamePrefix=f'tile_{i}_S2',
-        region=geom,
+        region=features[i]["geometry"]["coordinates"],
         scale=SCALE,
         maxPixels=1e13,
         fileFormat='GeoTIFF'
@@ -89,7 +89,7 @@ for i in range(num_tiles):
         description=f'tile_{i}_DW',
         folder='GEE_DW',
         fileNamePrefix=f'tile_{i}_DW',
-        region=geom,
+        region=features[i]["geometry"]["coordinates"],
         scale=SCALE,
         maxPixels=1e13,
         fileFormat='GeoTIFF'
