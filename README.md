@@ -1,37 +1,46 @@
-# LULC classification of Mexico using CNN
 
----
+# LULC Classification of Mexico Using CNN
+
+------------------------------------------------------------------------
 
 ## Dataset
-The dataset is generated using Google Earth Engine and includes:
+
+The dataset includes:
 
 - Sentinel-2 imagery (Bands: 2, 3, 4, 5, 6, 7, 8, 8a, 11)
 - Dynamic World class labels
 - Tile-based with random sampling
 - 363 images
 
----
+------------------------------------------------------------------------
 
-## Repository Structure
-urban-classification/
-├── dataset/ # data loading & preprocessing
-├── src/ # models, evaluation, visualization
-├── output/ # figures, predictions, graphs
-├── main.py # entry point
-├── requirements.txt
-└── README.md
+## Project Structure
 
-## Instructions
-```
-pip install -r requirements.txt
-```
+    urban-classification/
+    ├── dataset/        # Data loading, preprocessing, transformations
+    ├── src/            # Models, training, evaluation, visualization
+    ├── output/         # Predictions, plots, metrics
+    ├── main.py         # Main entry point
+    ├── requirements.txt
+    └── README.md
 
-## Run
-```
-pyhton3 main.py
-```
+------------------------------------------------------------------------
 
-For running individual packages
-```
-pyhton3 -m src.package.subpackage
-```
+## Installation
+
+Install dependencies using:
+
+    pip install -r requirements.txt
+
+------------------------------------------------------------------------
+
+## Usage
+
+Run the main pipeline:
+
+    python3 main.py
+
+Run individual modules:
+
+    python3 -m src.package.subpackage
+
