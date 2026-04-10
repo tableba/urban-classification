@@ -17,12 +17,13 @@ The dataset includes:
 ## Project Structure
 
     urban-classification/
-    ├── dataset/        # Data loading, preprocessing, transformations
-    ├── src/            # Models, training, evaluation, visualization
-    ├── output/         # Predictions, plots, metrics
-    ├── main.py         # Main entry point
+    ├── src/
+    │   ├── dataset/                 # Preprocessing and reading data
+    │   ├── display/                 # Displaying tiles & converting tiles to png
+    │   ├── models/
+    ├── output/                      # Predictions, figures, metrics
+    ├── main.py                      # Entry point
     ├── requirements.txt
-    └── README.md
 
 ------------------------------------------------------------------------
 
