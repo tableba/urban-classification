@@ -5,6 +5,9 @@ __pycache__/
 
 data/
 output/models/kmeans/*
+output/models/kmeans/*
+output/s2/*
+output/dw/*
 
 # Virtual environments
 venv/
