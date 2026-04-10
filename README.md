@@ -1,35 +1,37 @@
-# Urban detection across mexico between 2016 and 2023
-
-## Overview
-This repository contains the code and resources for the thesis project:
-
-**"Title of Thesis"**
-
-The project focuses on using machine learning to detect urban areas from satellite imagery and quantify urban expansion over time.
-
----
-
-## Objectives
-- Train supervised machine-learning models to classify pixels as **urban** or **non-urban**
-- Apply models to multi-temporal satellite imagery (2016 vs 2023)
-- Quantify urban growth between the two time periods
-- Evaluate model performance using building-based ground-truth data
+# LULC classification of Mexico using CNN
 
 ---
 
 ## Dataset
 The dataset is generated using Google Earth Engine and includes:
 
-- Sentinel-2 imagery (RGB + NDVI)
-- Time periods: **2016 and 2023**
-- Building masks:
-  - 2016 buildings
-  - 2023 buildings
-  - New buildings (2016 → 2023)
-- Tile-based structure with aligned spatial bounds
-
-> NOTE: Dataset is not included in this repository. See instructions below.
+- Sentinel-2 imagery (Bands: 2, 3, 4, 5, 6, 7, 8, 8a, 11)
+- Dynamic World class labels
+- Tile-based with random sampling
+- 363 images
 
 ---
 
 ## Repository Structure
+urban-classification/
+├── dataset/ # data loading & preprocessing
+├── src/ # models, evaluation, visualization
+├── output/ # figures, predictions, graphs
+├── main.py # entry point
+├── requirements.txt
+└── README.md
+
+## Instructions
+```
+pip install -r requirements.txt
+```
+
+## Run
+```
+pyhton3 main.py
+```
+
+For running individual packages
+```
+pyhton3 -m src.package.subpackage
+```

@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 data/
+output/models/kmeans/*
 
 # Virtual environments
 venv/

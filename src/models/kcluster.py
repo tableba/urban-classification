@@ -3,18 +3,16 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import rasterio
 
-
 def compute_ndvi(nir, red):
     return (nir - red) / (nir + red + 1e-6)
-
 
 def load_features(path, window=None):
     print(path)
     with rasterio.open(path) as src:
         data = src.read(window=window).astype("float32")
 
-    if data.shape[0] < 4:
-        raise ValueError("Need at least 5 bands (Sentinel-2)")
+    if data.shape[0] < 9:
+        raise ValueError("Need at least 9 bands (Sentinel-2)")
 
     data = data.astype("float32") * 0.0001
 
@@ -63,23 +61,45 @@ def show_clusters(labels, shape):
     plt.show()
 
 
-def run(name, data):
-    if data.shape[0] < 5:
+def run_kmeans(key, data):
+    # Ensure enough bands
+    if data.shape[0] < 9:
         return
 
+    # Replace NaNs
     data = np.nan_to_num(data, nan=0.0)
 
-    blue = data[1]
-    green = data[2]
-    red = data[3]
-    nir = data[7] if data.shape[0] > 7 else data[3]
+    # Sentinel-2 bands (assuming order: B2, B3, B4, B5, B6, B7, B8, B8A, B11)
+    blue  = data[0]  # B2
+    green = data[1]  # B3
+    red   = data[2]  # B4
+    b5    = data[3]
+    b6    = data[4]
+    b7    = data[5]
+    nir   = data[6]  # B8
+    nir_a = data[7]  # B8A
+    swir  = data[8]  # B11
 
+    # Spectral indices
     ndvi = (nir - red) / (nir + red + 1e-6)
+    ndbi = (swir - nir) / (swir + nir + 1e-6)   # urban indicator
+    ndwi = (green - nir) / (green + nir + 1e-6) # water indicator
 
-    features = np.stack([red, green, blue, ndvi], axis=-1)
+    # Stack features (raw bands + indices)
+    features = np.stack([
+        blue, green, red,
+        b5, b6, b7,
+        nir, nir_a, swir,
+        ndvi, ndbi, ndwi
+    ], axis=-1)
+
     H, W, C = features.shape
     X = features.reshape(-1, C)
 
+    # Optional: normalize (recommended for KMeans)
+    X = (X - X.mean(axis=0)) / (X.std(axis=0) + 1e-6)
+
+    # KMeans
     model = KMeans(n_clusters=4, random_state=0, n_init=10)
     labels = model.fit_predict(X)
 
@@ -88,5 +108,5 @@ def run(name, data):
     plt.imshow(label_map, cmap="tab20")
     plt.title("Clusters")
     plt.axis("off")
-
-    plt.imsave(f"output/{name}_clusters.png", label_map, cmap="tab20")
+    plt.imsave(f"output/models/kmeans/tile_{key}_clusters.png", label_map, cmap="tab20")
+    plt.close()
