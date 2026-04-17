@@ -1,6 +1,8 @@
 import os
 import re
+import numpy as np
 import rasterio
+
 
 class ReadTifs:
     def __init__(self,
@@ -63,8 +65,13 @@ if __name__ == "__main__":
     reader = ReadTifs()
     for key, s2, dw in reader.loop_through_files():
         print("key: ", key)
-        print("s2: ", s2.describe())
-        print("dw: ", dw)
+        print("s2 shape:", s2.shape)        # (bands, height, width)
+        print("s2: ", s2)
+        print("s2 dtype:", s2.dtype)
+        print("s2 min/max:", np.nanmin(s2), np.nanmax(s2))
+        print("dw shape:", dw.shape)
+        print("dw:", dw)
+        print("---")
 
     # reader.loop_through_dw()
 
