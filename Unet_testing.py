@@ -2,7 +2,7 @@ from src.dataset.read_data import ReadTifs
 import torch
 from torch.utils.data import DataLoader
 from src.dataset.preprocessing import clean_s2_data, normalize_bands, extract_patches, SentinelDataset
-from src.models.simplecnn import SimpleCNN
+from src.models.Unet import UNet
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -69,7 +69,7 @@ def prepare_data(max_tiles_per_third=8):
 
 def init_model(load_path=None):
     print("Initializing model...")
-    model = SimpleCNN().to(DEVICE)
+    model = UNet().to(DEVICE)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -178,7 +178,7 @@ def visualize_predictions(model, dataloader, num_samples=3):
 
 
 if __name__ == "__main__":
-    print("=== Starting CNN Testing ===")
+    print("=== Starting Unet Testing ===")
     patches = prepare_data()
 
     """
@@ -188,8 +188,6 @@ if __name__ == "__main__":
   
     train_model(model, dataloader, criterion, optimizer, EPOCHS)
 
-    torch.save(model.state_dict(), "simple_cnn.pth")
-    print("Model saved as simple_cnn.pth")
     """
 
     train, val = train_test_split(patches)
