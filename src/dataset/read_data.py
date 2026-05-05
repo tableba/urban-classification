@@ -16,20 +16,20 @@ class ReadTifs:
             for f in files:
                 yield os.path.join(root, f)
 
-    def _read_preview(self, path, window=None):
+    def _read_tif(self, path, window=None):
         with rasterio.open(path) as src:
             return src.read(window=window)
 
     def loop_through_s2(self):
         for path in self.get_tif_files(self.s2_dir):
             name = os.path.basename(path)
-            data = self._read_preview(path)
+            data = self._read_tif(path)
             yield name, "S2", data
 
     def loop_through_dw(self):
         for path in self.get_tif_files(self.dw_dir):
             name = os.path.basename(path)
-            data = self._read_preview(path)
+            data = self._read_tif(path)
             yield name, "DW", data
 
     def loop_through_files(self):
@@ -55,8 +55,8 @@ class ReadTifs:
             s2_path = s2_files[key]
             dw_path = dw_files[key]
 
-            s2_data = self._read_preview(s2_path)
-            dw_data = self._read_preview(dw_path)
+            s2_data = self._read_tif(s2_path)
+            dw_data = self._read_tif(dw_path)
 
             yield key, s2_data, dw_data
 

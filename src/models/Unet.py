@@ -3,8 +3,9 @@ import torch.nn as nn
 
 
 class UNet(nn.Module):
-    def __init__(self, in_channels=9, num_classes=9):
+    def __init__(self, in_channels=12, num_classes=9):
         super().__init__()
+
 
         # Encoder
         self.enc1 = self.conv_block(in_channels, 32)
@@ -38,9 +39,11 @@ class UNet(nn.Module):
             nn.Conv2d(in_ch, out_ch, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_ch),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3),
             nn.Conv2d(out_ch, out_ch, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_ch),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.3),
         )
 
     def forward(self, x):
